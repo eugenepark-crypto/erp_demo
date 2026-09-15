@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>회의실 예약 - (주)다온에프에스 교육용 가상 시스템</title>
+<link rel="stylesheet" href="assets/training_style.css">
+</head>
+<body>
+<script src="assets/training_seed_data.js"></script>
+<script src="assets/training_app.js"></script>
+<script>
+  const session = trainingInitPage("training_ga_room.html", null);
+
+  function trainingRenderRoomList() {
+    const data = trainingLoadData();
+    const all = [...data.roomBookings].sort((a, b) => (a.date + a.timeSlot).localeCompare(b.date + b.timeSlot));
+    const rows = all.length
+      ? all.map(r =>
+          '<tr><td>' + r.room + '</td><td>' + r.date + '</td><td>' + r.timeSlot + '</td><td>' + r.empName + '</td><td>' + r.purpose + '</td></tr>'
+        ).join("")
+      : '<tr><td colspan="5" style="color:#8a95a3;">예약 내역이 없습니다.</td></tr>';
+    document.getElementById("room-list-body").innerHTML = rows;
+  }
+
+  if (session) {
+    trainingRenderPageContent(`
+      <h1 class="page-title">회의실 예약</h1>
+      <p class="page-desc">총무(GA) 기본 기능 · 회의실 예약 신청과 전체 예약 현황 조회 화면 예시입니다.</p>
+
+      <div class="card">
+        <h2>회의실 예약 신청</h2>
+        <form id="room-form">
+          <div class="form-row">
+            <div>
+              <label for="room">회의실</label>
+              <select id="room">
+                <option>3층 대회의실</option>
+                <option>2층 소회의실 A</option>
+                <option>2층 소회의실 B</option>
+              </select>
+            </div>
+            <div>
+              <label for="date">날짜</label>
+              <input type="date" id="date" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label for="timeSlot">시간대</label>
+              <input type="text" id="timeSlot" placeholder="예: 14:00-15:00" required>
+            </div>
+            <div>
+              <label for="purpose">용도</label>
+              <input type="text" id="purpose" placeholder="예: 주간 회의" required>
+            </div>
+          </div>
+          <button type="submit" class="btn" style="margin-top:16px;">예약하기</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>전체 예약 현황</h2>
+        <table>
+          <thead><tr><th>회의실</th><th>날짜</th><th>시간</th><th>신청자</th><th>용도</th></tr></thead>
+          <tbody id="room-list-body"></tbody>
+        </table>
+      </div>
+    `);
+
+    document.getElementById("date").value = trainingToday();
+    trainingRenderRoomList();
+
+    document.getElementById("room-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const room = document.getElementById("room").value;
+      const date = document.getElementById("date").value;
+      const timeSlot = document.getElementById("timeSlot").value.trim();
+      const purpose = document.getElementById("purpose").value.trim();
+      if (!timeSlot || !purpose) return;
+
+      const data = trainingLoadData();
+      const clash = data.roomBookings.some(r => r.room === room && r.date === date && r.timeSlot === timeSlot);
+      if (clash) {
+        alert("같은 회의실·날짜·시간대에 이미 예약이 있습니다. (교육용 중복 예약 체크 예시)");
+        return;
+      }
+      data.roomBookings.push({
+        id: trainingNewId("rm"),
+        empName: session.name,
+        room: room,
+        date: date,
+        timeSlot: timeSlot,
+        purpose: purpose,
+      });
+      trainingSaveData(data);
+      trainingRenderRoomList();
+      document.getElementById("room-form").reset();
+      document.getElementById("date").value = trainingToday();
+      alert("회의실 예약이 완료되었습니다. (교육용 가상 처리)");
+    });
+
+    trainingRenderShellEnd();
+  }
+</script>
+</body>
+</html>

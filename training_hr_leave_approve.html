@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>휴가 승인 처리 - (주)다온에프에스 교육용 가상 시스템</title>
+<link rel="stylesheet" href="assets/training_style.css">
+</head>
+<body>
+<script src="assets/training_seed_data.js"></script>
+<script src="assets/training_app.js"></script>
+<script>
+  const session = trainingInitPage("training_hr_leave_approve.html", ["hr"]);
+
+  function trainingBadge(status) {
+    if (status === "승인") return '<span class="badge badge-approved">승인</span>';
+    if (status === "반려") return '<span class="badge badge-rejected">반려</span>';
+    return '<span class="badge badge-pending">대기</span>';
+  }
+
+  function trainingSetLeaveStatus(id, status) {
+    const data = trainingLoadData();
+    const target = data.leaveRequests.find(r => r.id === id);
+    if (target) target.status = status;
+    trainingSaveData(data);
+    trainingRenderApproveList();
+  }
+  window.trainingSetLeaveStatus = trainingSetLeaveStatus;
+
+  function trainingRenderApproveList() {
+    const data = trainingLoadData();
+    const all = [...data.leaveRequests].sort((a, b) => b.requestedAt.localeCompare(a.requestedAt));
+    const rows = all.map(r => {
+      const actions = r.status === "대기"
+        ? '<div class="btn-row">' +
+            '<button class="btn btn-small" onclick="trainingSetLeaveStatus(\'' + r.id + '\',\'승인\')">승인</button>' +
+            '<button class="btn btn-small btn-danger" onclick="trainingSetLeaveStatus(\'' + r.id + '\',\'반려\')">반려</button>' +
+          '</div>'
+        : '-';
+      return '<tr><td>' + r.empName + '</td><td>' + r.type + '</td><td>' + r.startDate + (r.startDate !== r.endDate ? " ~ " + r.endDate : "") + '</td><td>' + r.days + '일</td><td>' + r.reason + '</td><td>' + trainingBadge(r.status) + '</td><td>' + actions + '</td></tr>';
+    }).join("");
+    document.getElementById("approve-list-body").innerHTML = rows || '<tr><td colspan="7" style="color:#8a95a3;">신청 내역이 없습니다.</td></tr>';
+  }
+
+  if (session) {
+    trainingRenderPageContent(`
+      <h1 class="page-title">휴가 승인 처리</h1>
+      <p class="page-desc">인사(HR) 기본 기능 · 인사담당자 전용 화면입니다. 전 직원의 휴가 신청을 승인/반려합니다.</p>
+      <div class="role-hint">이 화면은 인사담당자로 로그인했을 때만 접근할 수 있습니다.</div>
+
+      <div class="card">
+        <h2>전체 휴가 신청 내역</h2>
+        <table>
+          <thead><tr><th>신청자</th><th>종류</th><th>기간</th><th>일수</th><th>사유</th><th>상태</th><th>처리</th></tr></thead>
+          <tbody id="approve-list-body"></tbody>
+        </table>
+      </div>
+    `);
+    trainingRenderApproveList();
+    trainingRenderShellEnd();
+  }
+</script>
+</body>
+</html>

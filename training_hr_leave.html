@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>휴가 신청/조회 - (주)다온에프에스 교육용 가상 시스템</title>
+<link rel="stylesheet" href="assets/training_style.css">
+</head>
+<body>
+<script src="assets/training_seed_data.js"></script>
+<script src="assets/training_app.js"></script>
+<script>
+  const session = trainingInitPage("training_hr_leave.html", null);
+
+  function trainingBadge(status) {
+    if (status === "승인") return '<span class="badge badge-approved">승인</span>';
+    if (status === "반려") return '<span class="badge badge-rejected">반려</span>';
+    return '<span class="badge badge-pending">대기</span>';
+  }
+
+  function trainingRenderMyLeaveList() {
+    const data = trainingLoadData();
+    const mine = data.leaveRequests.filter(r => r.empNo === session.empNo).sort((a, b) => b.requestedAt.localeCompare(a.requestedAt));
+    const rows = mine.length
+      ? mine.map(r =>
+          '<tr><td>' + r.type + '</td><td>' + r.startDate + (r.startDate !== r.endDate ? " ~ " + r.endDate : "") + '</td><td>' + r.days + '일</td><td>' + r.reason + '</td><td>' + trainingBadge(r.status) + '</td></tr>'
+        ).join("")
+      : '<tr><td colspan="5" style="color:#8a95a3;">신청 내역이 없습니다.</td></tr>';
+
+    document.getElementById("leave-list-body").innerHTML = rows;
+  }
+
+  if (session) {
+    trainingRenderPageContent(`
+      <h1 class="page-title">휴가 신청/조회</h1>
+      <p class="page-desc">인사(HR) 기본 기능 · 연차/반차 신청과 신청 내역 조회 화면 예시입니다.</p>
+
+      <div class="card">
+        <h2>휴가 신청</h2>
+        <form id="leave-form">
+          <div class="form-row">
+            <div>
+              <label for="type">휴가 종류</label>
+              <select id="type">
+                <option value="연차">연차</option>
+                <option value="반차(오전)">반차(오전)</option>
+                <option value="반차(오후)">반차(오후)</option>
+              </select>
+            </div>
+            <div></div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label for="startDate">시작일</label>
+              <input type="date" id="startDate" required>
+            </div>
+            <div>
+              <label for="endDate">종료일</label>
+              <input type="date" id="endDate" required>
+            </div>
+          </div>
+          <label for="reason">사유</label>
+          <textarea id="reason" placeholder="예: 개인 사유"></textarea>
+          <button type="submit" class="btn" style="margin-top:16px;">신청하기</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>내 신청 내역</h2>
+        <table>
+          <thead><tr><th>종류</th><th>기간</th><th>일수</th><th>사유</th><th>상태</th></tr></thead>
+          <tbody id="leave-list-body"></tbody>
+        </table>
+      </div>
+    `);
+
+    document.getElementById("startDate").value = trainingToday();
+    document.getElementById("endDate").value = trainingToday();
+    trainingRenderMyLeaveList();
+
+    document.getElementById("leave-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const type = document.getElementById("type").value;
+      const startDate = document.getElementById("startDate").value;
+      const endDate = document.getElementById("endDate").value;
+      const reason = document.getElementById("reason").value.trim() || "사유 미입력";
+
+      let days;
+      if (type.indexOf("반차") !== -1) {
+        days = 0.5;
+      } else {
+        const diff = (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24);
+        days = diff >= 0 ? diff + 1 : 1;
+      }
+
+      const data = trainingLoadData();
+      data.leaveRequests.push({
+        id: trainingNewId("lv"),
+        empNo: session.empNo,
+        empName: session.name,
+        type: type,
+        startDate: startDate,
+        endDate: type.indexOf("반차") !== -1 ? startDate : endDate,
+        days: days,
+        reason: reason,
+        status: "대기",
+        requestedAt: trainingToday(),
+      });
+      trainingSaveData(data);
+      trainingRenderMyLeaveList();
+      document.getElementById("reason").value = "";
+      alert("휴가 신청이 접수되었습니다. (교육용 가상 처리)");
+    });
+
+    trainingRenderShellEnd();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{
+  "_note": "교육용 가상 자료 - 실제 인물/회사/급여 정보가 아닙니다. (주)다온에프에스(DAON-FS) 교육용 시나리오용으로 새로 만든 데이터입니다.",
+  "company": { "name": "(주)다온에프에스", "nameEn": "DAON-FS" },
+  "employees": [
+    { "empNo": "23001", "name": "오세은", "dept": "인사총무팀", "position": "과장", "joinDate": "2019-05-13", "status": "재직중", "annualLeaveTotal": 15, "annualLeaveUsed": 0 },
+    { "empNo": "23002", "name": "민도현", "dept": "인사총무팀", "position": "주임", "joinDate": "2022-01-10", "status": "재직중", "annualLeaveTotal": 15, "annualLeaveUsed": 0 },
+    { "empNo": "23003", "name": "차은호", "dept": "영업1팀", "position": "대리", "joinDate": "2021-07-19", "status": "재직중", "annualLeaveTotal": 15, "annualLeaveUsed": 0 },
+    { "empNo": "23004", "name": "구지완", "dept": "영업1팀", "position": "사원", "joinDate": "2024-02-05", "status": "재직중", "annualLeaveTotal": 15, "annualLeaveUsed": 0.5 },
+    { "empNo": "23005", "name": "백서아", "dept": "물류운영팀", "position": "차장", "joinDate": "2016-09-01", "status": "재직중", "annualLeaveTotal": 15, "annualLeaveUsed": 0 },
+    { "empNo": "23006", "name": "장하린", "dept": "물류운영팀", "position": "사원", "joinDate": "2024-08-19", "status": "재직중", "annualLeaveTotal": 15, "annualLeaveUsed": 0 },
+    { "empNo": "23007", "name": "노준영", "dept": "경영지원팀", "position": "부장", "joinDate": "2012-03-16", "status": "재직중", "annualLeaveTotal": 15, "annualLeaveUsed": 0 },
+    { "empNo": "23008", "name": "윤태경", "dept": "영업1팀", "position": "사원", "joinDate": "2025-01-06", "status": "재직중", "annualLeaveTotal": 15, "annualLeaveUsed": 0 },
+    { "empNo": "23009", "name": "강도윤", "dept": "물류운영팀", "position": "대리", "joinDate": "2020-11-02", "status": "재직중", "annualLeaveTotal": 15, "annualLeaveUsed": 2 },
+    { "empNo": "23010", "name": "임서진", "dept": "경영지원팀", "position": "사원", "joinDate": "2024-05-20", "status": "재직중", "annualLeaveTotal": 15, "annualLeaveUsed": 0 },
+    { "empNo": "23011", "name": "한지우", "dept": "영업1팀", "position": "과장", "joinDate": "2018-04-15", "status": "재직중", "annualLeaveTotal": 15, "annualLeaveUsed": 0 },
+    { "empNo": "23012", "name": "조은비", "dept": "경영지원팀", "position": "주임", "joinDate": "2022-09-01", "status": "재직중", "annualLeaveTotal": 15, "annualLeaveUsed": 0 }
+  ],
+  "leaveRequests": [
+    { "id": "lv1", "empNo": "23003", "empName": "차은호", "type": "연차", "startDate": "2026-09-21", "endDate": "2026-09-21", "days": 1, "reason": "개인 사유", "status": "대기", "requestedAt": "2026-09-10" },
+    { "id": "lv2", "empNo": "23004", "empName": "구지완", "type": "반차(오전)", "startDate": "2026-09-16", "endDate": "2026-09-16", "days": 0.5, "reason": "병원 방문", "status": "승인", "requestedAt": "2026-09-05" },
+    { "id": "lv3", "empNo": "23006", "empName": "장하린", "type": "연차", "startDate": "2026-08-28", "endDate": "2026-08-29", "days": 2, "reason": "여름 휴가", "status": "반려", "requestedAt": "2026-08-20" },
+    { "id": "lv4", "empNo": "23002", "empName": "민도현", "type": "반차(오후)", "startDate": "2026-09-25", "endDate": "2026-09-25", "days": 0.5, "reason": "가족 행사", "status": "대기", "requestedAt": "2026-09-12" },
+    { "id": "lv5", "empNo": "23009", "empName": "강도윤", "type": "연차", "startDate": "2026-09-14", "endDate": "2026-09-15", "days": 2, "reason": "개인 사유", "status": "승인", "requestedAt": "2026-09-01" },
+    { "id": "lv6", "empNo": "23011", "empName": "한지우", "type": "연차", "startDate": "2026-09-30", "endDate": "2026-09-30", "days": 1, "reason": "리프레시 휴가", "status": "반려", "requestedAt": "2026-09-08" }
+  ],
+  "payroll": [
+    { "id": "pay_2026_09_23001", "empNo": "23001", "empName": "오세은", "payMonth": "2026-09", "baseSalary": 3700000, "allowance": 150000, "deduction": 385000, "netPay": 3465000 },
+    { "id": "pay_2026_09_23002", "empNo": "23002", "empName": "민도현", "payMonth": "2026-09", "baseSalary": 3000000, "allowance": 120000, "deduction": 312000, "netPay": 2808000 },
+    { "id": "pay_2026_09_23003", "empNo": "23003", "empName": "차은호", "payMonth": "2026-09", "baseSalary": 3300000, "allowance": 150000, "deduction": 345000, "netPay": 3105000 },
+    { "id": "pay_2026_09_23004", "empNo": "23004", "empName": "구지완", "payMonth": "2026-09", "baseSalary": 2700000, "allowance": 100000, "deduction": 280000, "netPay": 2520000 },
+    { "id": "pay_2026_09_23005", "empNo": "23005", "empName": "백서아", "payMonth": "2026-09", "baseSalary": 4100000, "allowance": 180000, "deduction": 428000, "netPay": 3852000 },
+    { "id": "pay_2026_09_23006", "empNo": "23006", "empName": "장하린", "payMonth": "2026-09", "baseSalary": 2700000, "allowance": 100000, "deduction": 280000, "netPay": 2520000 },
+    { "id": "pay_2026_09_23007", "empNo": "23007", "empName": "노준영", "payMonth": "2026-09", "baseSalary": 4500000, "allowance": 200000, "deduction": 470000, "netPay": 4230000 },
+    { "id": "pay_2026_09_23008", "empNo": "23008", "empName": "윤태경", "payMonth": "2026-09", "baseSalary": 2700000, "allowance": 100000, "deduction": 280000, "netPay": 2520000 },
+    { "id": "pay_2026_09_23009", "empNo": "23009", "empName": "강도윤", "payMonth": "2026-09", "baseSalary": 3300000, "allowance": 150000, "deduction": 345000, "netPay": 3105000 },
+    { "id": "pay_2026_09_23010", "empNo": "23010", "empName": "임서진", "payMonth": "2026-09", "baseSalary": 2700000, "allowance": 100000, "deduction": 280000, "netPay": 2520000 },
+    { "id": "pay_2026_09_23011", "empNo": "23011", "empName": "한지우", "payMonth": "2026-09", "baseSalary": 3700000, "allowance": 150000, "deduction": 385000, "netPay": 3465000 },
+    { "id": "pay_2026_09_23012", "empNo": "23012", "empName": "조은비", "payMonth": "2026-09", "baseSalary": 3000000, "allowance": 120000, "deduction": 312000, "netPay": 2808000 }
+  ]
+}

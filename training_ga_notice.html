@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>사내 공지 - (주)다온에프에스 교육용 가상 시스템</title>
+<link rel="stylesheet" href="assets/training_style.css">
+</head>
+<body>
+<script src="assets/training_seed_data.js"></script>
+<script src="assets/training_app.js"></script>
+<script>
+  const session = trainingInitPage("training_ga_notice.html", null);
+
+  function trainingRenderNoticeList() {
+    const data = trainingLoadData();
+    const all = [...data.notices].sort((a, b) => b.date.localeCompare(a.date));
+    const html = all.length
+      ? all.map(n =>
+          '<div class="notice-box"><h3>' + n.title + '</h3><div class="meta">' + n.author + ' · ' + n.date + '</div><p>' + n.content + '</p></div>'
+        ).join("")
+      : '<p style="color:#8a95a3;">등록된 공지가 없습니다.</p>';
+    document.getElementById("notice-list").innerHTML = html;
+  }
+
+  if (session) {
+    const writeFormHtml = session.role === "ga" ? `
+      <div class="card">
+        <h2>공지 작성 (총무담당자 전용)</h2>
+        <form id="notice-form">
+          <label for="title">제목</label>
+          <input type="text" id="title" placeholder="예: [총무] 사내 행사 안내" required>
+          <label for="content">내용</label>
+          <textarea id="content" placeholder="공지 내용을 입력하세요"></textarea>
+          <button type="submit" class="btn" style="margin-top:16px;">등록하기</button>
+        </form>
+      </div>
+    ` : "";
+
+    trainingRenderPageContent(`
+      <h1 class="page-title">사내 공지</h1>
+      <p class="page-desc">총무(GA) 기본 기능 · 사내 공지 게시판 조회${session.role === "ga" ? " 및 작성" : ""} 화면 예시입니다.</p>
+
+      ${writeFormHtml}
+
+      <div class="card">
+        <h2>공지 목록</h2>
+        <div id="notice-list"></div>
+      </div>
+    `);
+
+    trainingRenderNoticeList();
+
+    const form = document.getElementById("notice-form");
+    if (form) {
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const title = document.getElementById("title").value.trim();
+        const content = document.getElementById("content").value.trim();
+        if (!title || !content) return;
+
+        const data = trainingLoadData();
+        data.notices.push({
+          id: trainingNewId("no"),
+          title: title,
+          author: session.name + " (총무담당자, 가상)",
+          date: trainingToday(),
+          content: content,
+        });
+        trainingSaveData(data);
+        trainingRenderNoticeList();
+        form.reset();
+        alert("공지가 등록되었습니다. (교육용 가상 처리)");
+      });
+    }
+
+    trainingRenderShellEnd();
+  }
+</script>
+</body>
+</html>

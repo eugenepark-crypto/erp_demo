@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>비품 신청/조회 - (주)다온에프에스 교육용 가상 시스템</title>
+<link rel="stylesheet" href="assets/training_style.css">
+</head>
+<body>
+<script src="assets/training_seed_data.js"></script>
+<script src="assets/training_app.js"></script>
+<script>
+  const session = trainingInitPage("training_ga_supply.html", null);
+
+  function trainingBadge(status) {
+    if (status === "승인") return '<span class="badge badge-approved">승인</span>';
+    if (status === "반려") return '<span class="badge badge-rejected">반려</span>';
+    return '<span class="badge badge-pending">대기</span>';
+  }
+
+  function trainingRenderMySupplyList() {
+    const data = trainingLoadData();
+    const mine = data.supplyRequests.filter(r => r.empNo === session.empNo).sort((a, b) => b.requestedAt.localeCompare(a.requestedAt));
+    const rows = mine.length
+      ? mine.map(r =>
+          '<tr><td>' + r.item + '</td><td>' + r.qty + '개</td><td>' + r.reason + '</td><td>' + trainingBadge(r.status) + '</td></tr>'
+        ).join("")
+      : '<tr><td colspan="4" style="color:#8a95a3;">신청 내역이 없습니다.</td></tr>';
+    document.getElementById("supply-list-body").innerHTML = rows;
+  }
+
+  if (session) {
+    trainingRenderPageContent(`
+      <h1 class="page-title">비품/소모품 신청</h1>
+      <p class="page-desc">총무(GA) 기본 기능 · 비품·소모품 신청과 신청 내역 조회 화면 예시입니다.</p>
+
+      <div class="card">
+        <h2>비품 신청</h2>
+        <form id="supply-form">
+          <div class="form-row">
+            <div>
+              <label for="item">품목</label>
+              <input type="text" id="item" placeholder="예: A4 용지" required>
+            </div>
+            <div>
+              <label for="qty">수량</label>
+              <input type="number" id="qty" min="1" value="1" required>
+            </div>
+          </div>
+          <label for="reason">신청 사유</label>
+          <textarea id="reason" placeholder="예: 부서 비품 소진"></textarea>
+          <button type="submit" class="btn" style="margin-top:16px;">신청하기</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>내 신청 내역</h2>
+        <table>
+          <thead><tr><th>품목</th><th>수량</th><th>사유</th><th>상태</th></tr></thead>
+          <tbody id="supply-list-body"></tbody>
+        </table>
+      </div>
+    `);
+
+    trainingRenderMySupplyList();
+
+    document.getElementById("supply-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const item = document.getElementById("item").value.trim();
+      const qty = parseInt(document.getElementById("qty").value, 10) || 1;
+      const reason = document.getElementById("reason").value.trim() || "사유 미입력";
+      if (!item) return;
+
+      const data = trainingLoadData();
+      data.supplyRequests.push({
+        id: trainingNewId("sp"),
+        empNo: session.empNo,
+        empName: session.name,
+        item: item,
+        qty: qty,
+        reason: reason,
+        status: "대기",
+        requestedAt: trainingToday(),
+      });
+      trainingSaveData(data);
+      trainingRenderMySupplyList();
+      document.getElementById("supply-form").reset();
+      document.getElementById("qty").value = 1;
+      alert("비품 신청이 접수되었습니다. (교육용 가상 처리)");
+    });
+
+    trainingRenderShellEnd();
+  }
+</script>
+</body>
+</html>

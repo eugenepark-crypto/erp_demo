@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>DART 기업정보 조회</title>
+<style>
+  :root {
+    --primary: #1d4fa3;
+    --border: #dfe4ea;
+    --muted: #6b7684;
+    --bg: #f4f6f9;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    background: var(--bg);
+    color: #232a33;
+    padding: 32px 20px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .sub { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+  form { display: flex; gap: 8px; }
+  input[type=text] {
+    flex: 1;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+  }
+  input[type=number] {
+    width: 90px;
+    padding: 10px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+  }
+  button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    background: var(--primary);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:hover { opacity: 0.9; }
+  .hint { font-size: 12px; color: var(--muted); margin: 8px 0 24px; }
+  .card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .card h2 { margin: 0 0 10px; font-size: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 6px 4px; vertical-align: top; }
+  th { width: 90px; color: var(--muted); font-weight: 600; }
+  .disclosure { border-bottom: 1px solid var(--border); padding: 10px 0; font-size: 13px; }
+  .disclosure:last-child { border-bottom: none; }
+  .disclosure a { color: var(--primary); text-decoration: none; font-weight: 600; }
+  .disclosure a:hover { text-decoration: underline; }
+  .meta { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .error { color: #d0392b; font-size: 13px; }
+  .loading { color: var(--muted); font-size: 13px; }
+  select {
+    padding: 10px 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+  }
+  .filter-row { display: flex; gap: 8px; margin-top: 8px; }
+  .rm-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 1px 7px;
+    border-radius: 999px;
+    margin-left: 6px;
+    background: #eef2f8;
+    color: var(--muted);
+  }
+  .rm-badge.warn { background: #fbdedb; color: #d0392b; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>DART 기업정보 조회</h1>
+  <div class="sub">전자공시시스템(DART) 공식 API로 실제 기업 정보와 공시 내역을 조회합니다.</div>
+
+  <form id="search-form">
+    <input type="text" id="company" placeholder="회사명 입력 (예: 삼성전자)" required>
+    <input type="number" id="days" value="90" min="1" title="검색 기간(일)">
+    <button type="submit">검색</button>
+  </form>
+  <div class="filter-row">
+    <select id="type"><option value="">공시유형: 전체</option></select>
+  </div>
+  <div class="hint">검색 기간은 오늘부터 며칠 전까지 볼지입니다 (기본 90일) · 공시유형을 고르면 그 유형만 검색합니다</div>
+
+  <div id="result"></div>
+</div>
+
+<script>
+  const form = document.getElementById("search-form");
+  const resultBox = document.getElementById("result");
+  const typeSelect = document.getElementById("type");
+
+  // 공시유형 목록을 서버(/api/meta)에서 받아와 드롭다운을 채운다 (공시검색.md 기준 A~J)
+  fetch("/api/meta")
+    .then(res => res.json())
+    .then(meta => {
+      Object.entries(meta.pblntf_ty).forEach(([code, label]) => {
+        const opt = document.createElement("option");
+        opt.value = code;
+        opt.textContent = `${label} (${code})`;
+        typeSelect.appendChild(opt);
+      });
+    })
+    .catch(() => {});
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const company = document.getElementById("company").value.trim();
+    const days = document.getElementById("days").value || 90;
+    const type = typeSelect.value;
+    if (!company) return;
+
+    resultBox.innerHTML = '<p class="loading">조회 중...</p>';
+
+    try {
+      const params = new URLSearchParams({ name: company, days });
+      if (type) params.set("type", type);
+      const res = await fetch(`/api/company?${params.toString()}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        resultBox.innerHTML = `<p class="error">${data.error}</p>`;
+        return;
+      }
+
+      let html = "";
+
+      if (data.profile) {
+        const p = data.profile;
+        html += `
+          <div class="card">
+            <h2>${p.corp_name} (${p.stock_name || "-"}, ${p.stock_code || "비상장"})</h2>
+            <table>
+              <tr><th>대표자</th><td>${p.ceo_nm || "-"}</td></tr>
+              <tr><th>설립일</th><td>${p.est_dt || "-"}</td></tr>
+              <tr><th>주소</th><td>${p.adres || "-"}</td></tr>
+              <tr><th>홈페이지</th><td>${p.hm_url ? `<a href="https://${p.hm_url}" target="_blank">${p.hm_url}</a>` : "-"}</td></tr>
+            </table>
+          </div>
+        `;
+      }
+
+      html += `<div class="card"><h2>'${data.matched_name}' 최근 ${data.days}일 공시 (${data.disclosures.length}건)</h2>`;
+      if (data.disclosures.length === 0) {
+        html += `<p class="loading">해당 기간에 공시가 없습니다.</p>`;
+      } else {
+        data.disclosures.forEach(d => {
+          const url = `https://dart.fss.or.kr/dsaf001/main.do?rcpNo=${d.rcept_no}`;
+          const badges = (d.rm_labels || [])
+            .map(label => `<span class="rm-badge${label.includes("철회") ? " warn" : ""}">${label}</span>`)
+            .join("");
+          html += `
+            <div class="disclosure">
+              <a href="${url}" target="_blank">${d.report_nm}</a>${badges}
+              <div class="meta">${d.rcept_dt} · ${d.flr_nm}</div>
+            </div>
+          `;
+        });
+      }
+      html += `</div>`;
+
+      resultBox.innerHTML = html;
+    } catch (err) {
+      resultBox.innerHTML = `<p class="error">조회 중 오류가 발생했습니다: ${err.message}</p>`;
+    }
+  });
+</script>
+</body>
+</html>

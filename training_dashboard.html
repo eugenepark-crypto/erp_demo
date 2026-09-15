@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>대시보드 - (주)다온에프에스 교육용 가상 시스템</title>
+<link rel="stylesheet" href="assets/training_style.css">
+</head>
+<body>
+<script src="assets/training_seed_data.js"></script>
+<script src="assets/training_app.js"></script>
+<script>
+  const session = trainingInitPage("training_dashboard.html", null);
+  if (session) {
+    const data = trainingLoadData();
+    const myLeaveCount = data.leaveRequests.filter(r => r.empNo === session.empNo && r.status === "대기").length;
+    const mySupplyCount = data.supplyRequests.filter(r => r.empNo === session.empNo && r.status === "대기").length;
+    const noticesHtml = data.notices.slice(0, 3).map(n =>
+      '<div class="notice-box"><h3>' + n.title + '</h3><div class="meta">' + n.author + ' · ' + n.date + '</div><p>' + n.content + '</p></div>'
+    ).join("");
+
+    let roleTasksHtml = "";
+    if (session.role === "hr") {
+      const pendingLeave = data.leaveRequests.filter(r => r.status === "대기").length;
+      roleTasksHtml = '<div class="card"><h2>인사담당자 처리 대기</h2><p style="font-size:13px;">대기 중인 휴가 신청 <strong>' + pendingLeave + '건</strong>이 있습니다. <a href="training_hr_leave_approve.html">휴가 승인 처리로 이동 →</a></p></div>';
+    } else if (session.role === "ga") {
+      const pendingSupply = data.supplyRequests.filter(r => r.status === "대기").length;
+      roleTasksHtml = '<div class="card"><h2>총무담당자 처리 대기</h2><p style="font-size:13px;">대기 중인 비품 신청 <strong>' + pendingSupply + '건</strong>이 있습니다. <a href="training_ga_supply_approve.html">비품 승인 처리로 이동 →</a></p></div>';
+    }
+
+    trainingRenderPageContent(`
+      <h1 class="page-title">대시보드</h1>
+      <p class="page-desc">${session.name}님, 안녕하세요. 교육용 가상 사내 시스템입니다.</p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h2>내 신청 현황</h2>
+          <table>
+            <tr><td>내 대기 중인 휴가 신청</td><td><span class="badge badge-pending">${myLeaveCount}건</span></td></tr>
+            <tr><td>내 대기 중인 비품 신청</td><td><span class="badge badge-pending">${mySupplyCount}건</span></td></tr>
+          </table>
+          <div class="btn-row" style="margin-top:14px;">
+            <a class="btn btn-outline btn-small" href="training_hr_leave.html">휴가 신청/조회</a>
+            <a class="btn btn-outline btn-small" href="training_ga_supply.html">비품 신청/조회</a>
+          </div>
+        </div>
+        <div class="card">
+          <h2>빠른 메뉴</h2>
+          <div class="btn-row" style="flex-wrap:wrap;">
+            <a class="btn btn-outline btn-small" href="training_hr_myinfo.html">내 정보 조회</a>
+            <a class="btn btn-outline btn-small" href="training_ga_room.html">회의실 예약</a>
+            <a class="btn btn-outline btn-small" href="training_ga_notice.html">사내 공지</a>
+          </div>
+        </div>
+      </div>
+
+      ${roleTasksHtml}
+
+      <div class="card">
+        <h2>최근 공지사항</h2>
+        ${noticesHtml}
+        <a class="btn btn-outline btn-small" href="training_ga_notice.html">공지 전체 보기 →</a>
+      </div>
+    `);
+    trainingRenderShellEnd();
+  }
+</script>
+</body>
+</html>

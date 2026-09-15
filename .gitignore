@@ -1,0 +1,23 @@
+# 환경변수 / 민감정보 (API 키 등)
+.env
+.env.*
+
+# Python 캐시/가상환경
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# 미사용 폴더 안의 캐시/다운로드 (재생성 가능한 대용량 파일)
+미사용/__pycache__/
+미사용/dart_cache/
+미사용/dart_downloads/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 에디터
+.vscode/
+.idea/

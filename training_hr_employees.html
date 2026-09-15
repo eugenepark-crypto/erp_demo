@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>사원 목록 - (주)다온에프에스 교육용 가상 시스템</title>
+<link rel="stylesheet" href="assets/training_style.css">
+</head>
+<body>
+<script src="assets/training_seed_data.js"></script>
+<script src="assets/training_app.js"></script>
+<script>
+  const session = trainingInitPage("training_hr_employees.html", ["hr"]);
+  if (session) {
+    const data = trainingLoadData();
+    const rows = data.employees.map(e =>
+      '<tr><td>' + e.empNo + '</td><td>' + e.name + '</td><td>' + e.dept + '</td><td>' + e.position + '</td><td>' + e.joinDate + '</td></tr>'
+    ).join("");
+
+    trainingRenderPageContent(`
+      <h1 class="page-title">사원 목록</h1>
+      <p class="page-desc">인사(HR) 기본 기능 · 인사담당자 전용 화면입니다. 전 직원의 기본 인사 정보를 조회합니다.</p>
+      <div class="role-hint">이 화면은 인사담당자로 로그인했을 때만 접근할 수 있습니다. 아래 사원 명단은 모두 가상 인물입니다.</div>
+
+      <div class="card">
+        <h2>전체 사원 (${data.employees.length}명)</h2>
+        <table>
+          <thead><tr><th>사번</th><th>이름</th><th>부서</th><th>직급</th><th>입사일</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    `);
+    trainingRenderShellEnd();
+  }
+</script>
+</body>
+</html>

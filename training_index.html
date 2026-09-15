@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>로그인 - (주)다온에프에스 교육용 가상 시스템</title>
+<link rel="stylesheet" href="assets/training_style.css">
+</head>
+<body>
+<div class="demo-banner">⚠ 교육용 가상 자료 - 실제 인사·총무 정보 아님 (모든 인물·문서는 창작된 예시입니다)</div>
+
+<div class="login-wrap">
+  <div class="login-card">
+    <h1>(주)다온에프에스</h1>
+    <div class="sub">DAON-FS 교육용 가상 사내 시스템 · 사용법 안내용</div>
+
+    <form id="login-form">
+      <label for="name">이름 (가상)</label>
+      <input type="text" id="name" placeholder="예: 김다온" required>
+
+      <label for="empNo">사번 (가상)</label>
+      <input type="text" id="empNo" placeholder="예: 23099" required>
+
+      <label>역할 선택</label>
+      <div class="role-options">
+        <label><input type="radio" name="role" value="employee" checked><span>일반직원</span></label>
+        <label><input type="radio" name="role" value="hr"><span>인사담당자</span></label>
+        <label><input type="radio" name="role" value="ga"><span>총무담당자</span></label>
+      </div>
+
+      <button type="submit" class="btn" style="width:100%; margin-top:20px;">로그인</button>
+      <div class="login-error" id="login-error">이름과 사번을 입력해 주세요.</div>
+    </form>
+
+    <div class="hint-box">
+      이 화면은 교육용으로 만든 가상 로그인입니다. 실제 계정 정보가 필요하지 않으며,
+      아무 이름/사번이나 입력하고 역할을 선택하면 됩니다. 역할에 따라 볼 수 있는 메뉴가 달라집니다.<br><br>
+      <strong>연동된 가상 사원 자료(내 정보·연차·급여)를 체험하려면</strong> 아래 사번 중 하나를 입력해 보세요 (이름은 무엇을 적어도 상관없이, <u>사번</u>으로 연결됩니다):<br>
+      23001(오세은) · 23002(민도현) · 23003(차은호) · 23004(구지완) · 23005(백서아) · 23006(장하린) · 23007(노준영) · 23008(윤태경) · 23009(강도윤) · 23010(임서진) · 23011(한지우) · 23012(조은비)
+    </div>
+
+    <div style="text-align:center; margin-top:14px;">
+      <button type="button" id="reset-btn" class="btn btn-danger btn-small">↺ 가상 데이터 초기화</button>
+      <div style="font-size:11px; color:#6b7684; margin-top:6px;">다음 교육 참가자가 시작하기 전, 지금까지의 신청/승인 기록을 지우고 처음 상태로 되돌립니다.</div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/training_seed_data.js"></script>
+<script src="assets/training_app.js"></script>
+<script>
+  document.getElementById("login-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const name = document.getElementById("name").value.trim();
+    const empNo = document.getElementById("empNo").value.trim();
+    const role = document.querySelector('input[name="role"]:checked').value;
+    const errorBox = document.getElementById("login-error");
+
+    if (!name || !empNo) {
+      errorBox.style.display = "block";
+      return;
+    }
+    errorBox.style.display = "none";
+
+    trainingEnsureSeedData();
+    trainingSetSession({ name: name, empNo: empNo, role: role });
+    window.location.href = "training_dashboard.html";
+  });
+
+  document.getElementById("reset-btn").addEventListener("click", function () {
+    const ok = confirm("정말 초기화할까요?\n지금까지 신청/승인한 모든 내역이 사라지고, 처음 가상 데이터 상태로 되돌아갑니다.\n(다음 교육 참가자를 위한 준비 작업입니다)");
+    if (!ok) return;
+    trainingResetAllData();
+    alert("가상 데이터를 초기화했습니다. 처음 상태로 돌아갔습니다.");
+  });
+</script>
+</body>
+</html>

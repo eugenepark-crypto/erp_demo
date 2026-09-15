@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>내 정보 조회 - (주)다온에프에스 교육용 가상 시스템</title>
+<link rel="stylesheet" href="assets/training_style.css">
+</head>
+<body>
+<script src="assets/training_seed_data.js"></script>
+<script src="assets/training_app.js"></script>
+<script>
+  const session = trainingInitPage("training_hr_myinfo.html", null);
+  if (session) {
+    const data = trainingLoadData();
+    const employee = trainingFindMyEmployee(data, session);
+    const profile = employee || Object.assign({ name: session.name, empNo: session.empNo }, data.myProfileDefault);
+    const leaveLeft = profile.annualLeaveTotal - profile.annualLeaveUsed;
+    const payslip = employee ? data.payroll.find(p => p.empNo === employee.empNo) : null;
+
+    const matchNoteHtml = employee
+      ? ""
+      : '<div class="role-hint">입력하신 사번과 일치하는 가상 사원 자료가 없어 기본값으로 표시합니다. 실제 연동된 자료를 보려면 로그아웃 후 아래 예시 사번(이름) 중 하나로 다시 로그인해 보세요: ' +
+        data.employees.map(e => e.empNo + "(" + e.name + ")").join(", ") + '</div>';
+
+    const payslipHtml = payslip ? `
+      <div class="card">
+        <h2>${payslip.payMonth} 급여 요약</h2>
+        <table>
+          <tr><th>기본급</th><td>${payslip.baseSalary.toLocaleString()}원</td></tr>
+          <tr><th>수당</th><td>${payslip.allowance.toLocaleString()}원</td></tr>
+          <tr><th>공제액</th><td>-${payslip.deduction.toLocaleString()}원</td></tr>
+          <tr><th>실지급액</th><td><strong>${payslip.netPay.toLocaleString()}원</strong></td></tr>
+        </table>
+        <p style="font-size:12px; color:#6b7684; margin-top:10px;">공제액은 교육용으로 단순화해 (기본급+수당)의 10%로 계산한 예시입니다. 실제 4대보험·세금 계산과 다를 수 있습니다.</p>
+      </div>
+    ` : `
+      <div class="card">
+        <h2>급여 요약</h2>
+        <p style="font-size:13px; color:#6b7684;">이 계정과 연결된 급여 샘플 데이터가 없습니다.</p>
+      </div>
+    `;
+
+    trainingRenderPageContent(`
+      <h1 class="page-title">내 정보 조회</h1>
+      <p class="page-desc">인사(HR) 기본 기능 · 사원 개인정보 조회 화면 예시입니다.</p>
+      ${matchNoteHtml}
+
+      <div class="card">
+        <h2>사원 정보</h2>
+        <table>
+          <tr><th>이름</th><td>${session.name}</td></tr>
+          <tr><th>사번</th><td>${profile.empNo}</td></tr>
+          <tr><th>부서</th><td>${profile.dept}</td></tr>
+          <tr><th>직급</th><td>${profile.position}</td></tr>
+          <tr><th>입사일</th><td>${profile.joinDate}</td></tr>
+          <tr><th>회사</th><td>${TRAINING_COMPANY.name} (${TRAINING_COMPANY.nameEn})</td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>연차 현황</h2>
+        <table>
+          <tr><th>총 연차</th><td>${profile.annualLeaveTotal}일</td></tr>
+          <tr><th>사용 연차</th><td>${profile.annualLeaveUsed}일</td></tr>
+          <tr><th>잔여 연차</th><td><strong>${leaveLeft}일</strong></td></tr>
+        </table>
+        <div class="btn-row" style="margin-top:14px;">
+          <a class="btn btn-small" href="training_hr_leave.html">휴가 신청하러 가기 →</a>
+        </div>
+      </div>
+
+      ${payslipHtml}
+    `);
+    trainingRenderShellEnd();
+  }
+</script>
+</body>
+</html>
