@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Gemini 연동 테스트 - (주)다온에프에스 교육용 가상 시스템</title>
+<link rel="stylesheet" href="assets/training_style.css">
+</head>
+<body>
+<script src="assets/training_seed_data.js"></script>
+<script src="assets/training_app.js"></script>
+<script>
+  const session = trainingInitPage("gemini_test.html", null);
+  if (session) {
+    trainingRenderPageContent(`
+      <h1 class="page-title">Gemini API 연동 테스트</h1>
+      <p class="page-desc">Vercel에 배포된 서버(Serverless Function)가 GEMINI_API_KEY를 정상적으로 사용하는지 확인하는 개발용 화면입니다. 실습 커리큘럼과는 무관합니다.</p>
+
+      <div class="card">
+        <h2>질문 보내기</h2>
+        <label for="gemini-prompt">질문</label>
+        <textarea id="gemini-prompt">Gemini API 연동 테스트입니다. 정상 동작하면 "연동 성공"이라고만 답해주세요.</textarea>
+        <div class="btn-row" style="margin-top:12px;">
+          <button class="btn" id="gemini-ask-btn" onclick="geminiTestAsk()">질문하기</button>
+        </div>
+        <div id="gemini-status" style="margin-top:14px; font-size:13px;"></div>
+        <div id="gemini-result" class="card" style="margin-top:12px; display:none; background:#f7f8fa; white-space:pre-wrap; font-size:13px;"></div>
+      </div>
+    `);
+    trainingRenderShellEnd();
+  }
+
+  async function geminiTestAsk() {
+    const promptEl = document.getElementById("gemini-prompt");
+    const statusEl = document.getElementById("gemini-status");
+    const resultEl = document.getElementById("gemini-result");
+    const btn = document.getElementById("gemini-ask-btn");
+    const prompt = promptEl.value.trim();
+    if (!prompt) {
+      statusEl.textContent = "질문을 입력해주세요.";
+      return;
+    }
+
+    btn.disabled = true;
+    statusEl.textContent = "⏳ Gemini API 호출 중...";
+    resultEl.style.display = "none";
+
+    try {
+      const res = await fetch("/api/gemini", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        statusEl.innerHTML = '<span style="color:var(--color-danger); font-weight:600;">✗ 연동 실패</span> — ' + (data.error || ("HTTP " + res.status));
+        return;
+      }
+
+      statusEl.innerHTML = '<span style="color:var(--color-ok); font-weight:600;">✓ 연동 성공</span> — API 키가 정상적으로 동작합니다.';
+      resultEl.style.display = "block";
+      resultEl.textContent = data.text;
+    } catch (err) {
+      statusEl.innerHTML = '<span style="color:var(--color-danger); font-weight:600;">✗ 연동 실패</span> — ' + err.message;
+    } finally {
+      btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>

@@ -93,6 +93,9 @@ const TRAINING_MENUS = [
     { href: "training_ga_room.html", label: "회의실 예약", roles: ["employee", "hr", "ga"] },
     { href: "training_ga_notice.html", label: "사내 공지", roles: ["employee", "hr", "ga"] },
   ]},
+  { group: "개발용", items: [
+    { href: "gemini_test.html", label: "Gemini 연동 테스트", roles: ["employee", "hr", "ga"] },
+  ]},
 ];
 
 function trainingRenderBanner() {
