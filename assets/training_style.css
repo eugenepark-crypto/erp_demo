@@ -1,8 +1,8 @@
 /* 교육용 가상 업무 앱 공통 스타일 - (주)다온에프에스 DAON-FS */
 
 :root {
-  --color-primary: #2f5fb3;
-  --color-primary-dark: #1f4488;
+  --color-primary: #6c5ce7;
+  --color-primary-dark: #4b3fa8;
   --color-bg: #f4f6f9;
   --color-card: #ffffff;
   --color-border: #dfe4ea;
@@ -15,6 +15,7 @@
   --color-pending: #b98900;
   --color-rejected: #d0392b;
   --radius: 8px;
+  --rainbow: linear-gradient(135deg, #ff4d4d, #ff9f43, #ffe066, #4caf50, #3aa8ff, #6c5ce7, #b967ff);
 }
 
 * { box-sizing: border-box; }
@@ -54,49 +55,56 @@ body {
 .sidebar {
   width: 230px;
   flex-shrink: 0;
-  background: var(--color-primary-dark);
+  background: var(--rainbow);
+  background-size: 180% 180%;
   color: #fff;
   padding: 20px 0;
 }
+.sidebar .brand,
+.sidebar .user-box,
+.sidebar a,
+.sidebar .logout-link {
+  text-shadow: 0 1px 3px rgba(0,0,0,0.45);
+}
 .sidebar .brand {
   padding: 0 18px 18px;
-  border-bottom: 1px solid rgba(255,255,255,0.15);
+  border-bottom: 1px solid rgba(255,255,255,0.3);
   margin-bottom: 12px;
 }
 .sidebar .brand strong { display: block; font-size: 15px; }
-.sidebar .brand span { display: block; font-size: 11px; opacity: 0.7; margin-top: 2px; }
+.sidebar .brand span { display: block; font-size: 11px; opacity: 0.85; margin-top: 2px; }
 .sidebar .user-box {
   padding: 0 18px 16px;
   font-size: 12px;
-  opacity: 0.9;
-  border-bottom: 1px solid rgba(255,255,255,0.15);
+  opacity: 0.95;
+  border-bottom: 1px solid rgba(255,255,255,0.3);
   margin-bottom: 8px;
 }
 .sidebar nav { display: flex; flex-direction: column; }
 .sidebar .menu-group-title {
   padding: 12px 18px 4px;
   font-size: 11px;
-  opacity: 0.55;
+  opacity: 0.75;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 .sidebar a {
-  color: #dbe6ff;
+  color: #ffffff;
   text-decoration: none;
   padding: 9px 18px;
   font-size: 14px;
   display: block;
 }
-.sidebar a:hover { background: rgba(255,255,255,0.08); }
-.sidebar a.active { background: var(--color-primary); color: #fff; font-weight: 600; }
+.sidebar a:hover { background: rgba(0,0,0,0.18); }
+.sidebar a.active { background: rgba(0,0,0,0.32); color: #fff; font-weight: 700; }
 .sidebar .logout { margin-top: auto; }
 .sidebar .logout-link {
   display: block;
   padding: 10px 18px;
   font-size: 13px;
-  color: #ffd9d9;
+  color: #fff0f0;
   text-decoration: none;
-  border-top: 1px solid rgba(255,255,255,0.15);
+  border-top: 1px solid rgba(255,255,255,0.3);
   margin-top: 16px;
 }
 
@@ -138,10 +146,12 @@ tr:last-child td { border-bottom: none; }
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  background: var(--color-primary);
+  background: var(--rainbow);
+  background-size: 220% 220%;
   color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.25);
 }
-.btn:hover { background: var(--color-primary-dark); }
+.btn:hover { filter: brightness(0.92); }
 .btn-outline { background: #fff; color: var(--color-primary); border: 1px solid var(--color-primary); }
 .btn-small { padding: 5px 11px; font-size: 12px; }
 .btn-danger { background: var(--color-danger); }
@@ -203,7 +213,14 @@ footer.app-footer {
   width: 380px;
   box-shadow: 0 8px 24px rgba(20,30,50,0.06);
 }
-.login-card h1 { font-size: 19px; margin: 0 0 4px; }
+.login-card h1 {
+  font-size: 19px;
+  margin: 0 0 4px;
+  background: var(--rainbow);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 .login-card .sub { font-size: 12px; color: var(--color-text-muted); margin-bottom: 20px; }
 .role-options { display: flex; gap: 8px; margin-top: 6px; }
 .role-options label {
@@ -219,7 +236,7 @@ footer.app-footer {
 }
 .role-options input { display: none; }
 .role-options input:checked + span { color: var(--color-primary); font-weight: 700; }
-.role-options label:has(input:checked) { border-color: var(--color-primary); background: #eef3fd; }
+.role-options label:has(input:checked) { border-color: var(--color-primary); background: #f2effc; }
 .login-error { color: var(--color-danger); font-size: 12px; margin-top: 10px; display: none; }
 .hint-box {
   margin-top: 18px;
