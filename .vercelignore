@@ -1,0 +1,11 @@
+# 실습 앱과 무관한 미사용 파일 (파이썬 서버, DART/Gemini 예제 등) — 배포에서 제외
+미사용/
+
+# 개발용 참고 문서/스크린샷 — 실습 앱 실행에 필요 없음
+PRD.md
+DESIGN.md
+데이터안내.md
+레퍼런스.md
+확인결과.md
+CLAUDE.md
+screenshots/
